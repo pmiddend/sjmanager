@@ -1,0 +1,31 @@
+digraph D
+{
+	continue_or_new_show -> ask_for_show_search_string
+	continue_or_new_show -> choose_continue_show
+	choose_continue_show -> determine_next_episode
+	determine_next_episode -> choose_season
+	determine_next_episode -> choose_episode
+	determine_next_episode -> download_or_play
+	continue_or_new_show -> no_shows_in_cache
+	no_shows_in_cache -> continue_or_new_show
+	ask_for_show_search_string -> ask_for_show_search_string
+	ask_for_show_search_string -> choose_new_show_from_list
+	choose_new_show_from_list -> no_shows_found
+	no_shows_found -> ask_for_show_search_string
+	choose_new_show_from_list -> choose_season
+	choose_season -> choose_episode
+	choose_episode -> download_or_play
+	download_or_play -> choose_quality
+	download_or_play -> play
+	choose_quality -> resolve_linklist
+	resolve_linklist -> wrong_captcha
+	wrong_captcha -> resolve_linklist
+	resolve_linklist -> download
+	download -> download_error
+	download_error -> choose_quality
+	download -> play
+	play -> finished_watching
+	finished_watching -> delete_from_cache
+	finished_watching -> continue_or_new_show
+	delete_from_cache -> continue_or_new_show
+}
