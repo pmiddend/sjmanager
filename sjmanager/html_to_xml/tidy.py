@@ -7,17 +7,11 @@ import os
 
 class Tidy(sjmanager.html_to_xml.base.Base):
 	def __init__(self,config_file,xquery_processor):
-		if not config_file.has_option('tidy','executable'):
-			self.executable = 'tidy'
-		else:
-			self.executable = config_file.get('tidy','executable')
+		self.executable = config_file.get('tidy','executable',fallback = 'tidy')
 		self.xquery_processor = xquery_processor
 	
 	def available(config_file):
-		if not config_file.has_option('tidy','executable'):
-			executable = 'tidy'
-		else:
-			executable = config_file.get('tidy','executable')
+		executable = config_file.get('tidy','executable',fallback = 'tidy')
 
 		if not sjmanager.util.program_in_path(executable):
 			sjmanager.log.log('tidy not available: {} not in path'.format(executable))

@@ -82,7 +82,7 @@ class Account:
 
 		check_result = ''
 		with check_result_file as f:
-									check_result = str(f.read(),encoding='utf8')
+			check_result = str(f.read(),encoding='utf8')
 
 		sjmanager.log.log('Check result is: '+check_result)
 
@@ -95,6 +95,8 @@ class Account:
 	def download(
 		self,
 		**args):
+	
+		sjmanager.log.log('rs: Downloading something')
 
 		return self.downloader.download(
 			cookie = self.cookie, 

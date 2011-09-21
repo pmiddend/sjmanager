@@ -2,7 +2,6 @@ import sjmanager.sj
 import sjmanager.states
 import sjmanager.dialog
 import sjmanager.rar
-import sjmanager.util
 
 import tempfile
 import shutil
@@ -650,7 +649,7 @@ class Menu:
 
 		# Ok, now we know all links are valid, we can begin downloading them
 		counter = 1
-		with sjmanager.util.TemporaryDirectory() as tempdir_raw:
+		with tempfile.TemporaryDirectory() as tempdir_raw:
 			tempdir = sjmanager.util.Path(
 				tempdir_raw)
 

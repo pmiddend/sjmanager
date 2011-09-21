@@ -3,8 +3,7 @@ import abc
 class Base(object):
 	__metaclass__ = abc.ABCMeta
 
-# not available in 3.1
-#	@abc.abstractstaticmethod
+	@abc.abstractstaticmethod
 	def available(
 		config_file):
 		""" Return a boolean indicating if the SQL module is available """

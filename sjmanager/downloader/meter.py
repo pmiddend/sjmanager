@@ -21,6 +21,8 @@ class Dialog:
 def simple(
 	percent):
 
+	sjmanager.log.log('Got {} percent (type {})'.format(percent,type(percent)))
+
 	assert isinstance(percent,int)
 
 	sys.stdout.write(

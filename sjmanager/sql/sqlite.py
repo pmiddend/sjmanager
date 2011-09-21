@@ -30,12 +30,10 @@ class Sqlite(sjmanager.sql.base.Base):
 		return True
 
 	def __init__(self,config_file):
-		if config_file.has_option('sqlite','db_file'):
-			db_file = config_file.get(
-				'sqlite',
-				'db_file')
-		else:
-			db_file = fallback = '$CACHE_DIR/db'
+		db_file = config_file.get(
+			'sqlite',
+			'db_file',
+			fallback = '$CACHE_DIR/db')
 
 		db_file = db_file.replace(
 			'$CACHE_DIR',

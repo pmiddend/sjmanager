@@ -66,12 +66,10 @@ class Curl(sjmanager.downloader.base.Base):
 		self,
 		config_file):
 
-		if config_file.has_option('curl','executable'):
-			self.executable = config_file.get(
-				'curl',
-				'executable')
-		else:
-			self.executable = 'curl'
+		self.executable = config_file.get(
+			'curl',
+			'executable',
+			fallback = 'curl')
 
 		assert sjmanager.util.program_in_path(
 			self.executable)
@@ -93,12 +91,10 @@ class Curl(sjmanager.downloader.base.Base):
 		"""
 		sjmanager.log.log('Checking if curl is available')
 
-		if config_file.has_option('curl','executable'):
-			executable = config_file.get(
-				'curl',
-				'executable')
-		else:
-			executable = 'curl'
+		executable = config_file.get(
+			'curl',
+			'executable',
+			fallback = 'curl')
 
 		sjmanager.log.log('The config file told me the executable is {}'.format(executable))
 
@@ -108,13 +104,12 @@ class Curl(sjmanager.downloader.base.Base):
 
 		process = subprocess.Popen(
 			[executable,'-V'],
-			stdout = subprocess.PIPE)
+			stdout = subprocess.PIPE,
+			universal_newlines = True)
 
 		assert process.wait() == 0, 'Calling curl -V resulted in an error!'
 
-		lines = list(filter(lambda x : len(x) != 0,str(process.stdout.read(),encoding='utf8').split('\n')))
-		# Can't use readlines because we don't have universal_newlines available
-#		lines = process.stdout.readlines()
+		lines = process.stdout.readlines()
 
 		assert len(lines) == 3, 'Expected 3 lines of output from "curl -V", got {}'.format(lines)
 
@@ -135,6 +130,7 @@ class Curl(sjmanager.downloader.base.Base):
 		output_file_path = None,
 		post_dict = None,
 		cookie = None):
+
 		assert isinstance(url,str)
 		assert output_file_path == None or isinstance(output_file_path,sjmanager.util.Path)
 		assert post_dict == None or isinstance(post_dict,dict)

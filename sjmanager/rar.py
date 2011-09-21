@@ -14,6 +14,8 @@ else:
 
 class RarProcess:
 	def __init__(self,args,working_dir):
+		sjmanager.log.log('Extracting something. Arguments are {}, working dir is {}'.format(args,working_dir))
+
 		assert isinstance(working_dir,sjmanager.util.Path)
 
 		self.process = subprocess.Popen(

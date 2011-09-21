@@ -1,16 +1,5 @@
 import os
 import os.path
-import shutil
-import tempfile
-
-class TemporaryDirectory():
-	def __enter__(self):
-		self.temp_dir = tempfile.mkdtemp()
-		return self.temp_dir
-
-	def __exit__(self,type,value,traceback):
-		shutil.rmtree(
-			self.temp_dir)
 
 class Path:
 	def __init__(self,s):

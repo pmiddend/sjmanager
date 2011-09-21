@@ -5,44 +5,63 @@ import subprocess
 import os
 import os.path
 import sys
+import configparser
 import re
 import sjmanager.rs
-import sjmanager.curl
 import sjmanager.rar
+import sjmanager.config_directory
+import sjmanager.downloader.factory
+import sjmanager.downloader.meter
+import sjmanager.util
 import urllib.parse
 
 class Url:
-	def __init__(self,content):
+	def __init__(
+		self,
+		rs,
+		content):
+
+		assert isinstance(rs,sjmanager.rs.Account)
+		
+		self.rs = rs
 		self.content = content
 		self.has_error = False
 
-	def __repr__(self):
+	def __repr__(
+		self):
+
 		return self.content.__repr__()
 
-	def check(self):
+	def check(
+		self):
+
 		try:
-			self.content = sjmanager.rs.make_proper_link(
+			self.content = self.rs.make_proper_link(
 				self.content)
 		except Exception as message:
 			self.error = "Couldn't make it a proper link: {}".format(message)
 			self.has_error = True
 			return
 
-		result_code,result_string = sjmanager.rs.check_link(
+		result_code,result_string = self.rs.check_link(
 			self.content)
 
-		if result_code == sjmanager.rs.RS_CHECK_LINK_OK:
+		if result_code == sjmanager.rs.CheckLink.ok:
 			return
 
 		self.error = "Link checking failed: {}".format(result_string)
 		self.has_error = True
 
 class Group:
-	def __init__(self,command):
-		assert isinstance(
-			command,
-			list)
+	def __init__(
+		self,
+		rs,
+		command):
 
+		assert isinstance(command,list)
+		assert isinstance(rs,sjmanager.rs.Account)
+
+		self.rs = rs
 		self.command = command
 		self.urls = []
 		self.has_errors = False
@@ -50,6 +69,7 @@ class Group:
 	def append(self,url):
 		self.urls.append(
 			Url(
+				self.rs,
 				url))
 
 	def __repr__(self):
@@ -81,7 +101,10 @@ class Group:
 
 		return result
 
-def main(input_file = None):
+def main(
+	rs,
+	input_file = None):
+
 	if input_file == None:
 		input_file = tempfile.NamedTemporaryFile(
 			mode = 'r+',
@@ -121,7 +144,9 @@ def main(input_file = None):
 
 	groups = []
 	groups.append(
-		Group(['download','.']))
+		Group(
+			rs,
+			['download','.']))
 
 	for line in input_lines:
 		print(line)
@@ -135,6 +160,7 @@ def main(input_file = None):
 
 			groups.append(
 				Group(
+					rs,
 					args))
 			continue
 
@@ -168,6 +194,7 @@ def main(input_file = None):
 
 	if has_errors:
 		return main(
+			rs,
 			input_file)
 
 	for group in groups:
@@ -177,17 +204,24 @@ def main(input_file = None):
 		first_filename = None
 
 		for url in group.urls:
+			# CURRENT file name (the file b eing downloaded now)
 			target_filename = os.path.basename(
 				urllib.parse.urlparse(url.content).path)
 
 			if first_filename == None:
-				first_filename = target_filename
+				# Might be the FIRST filename
+				first_filename = sjmanager.util.Path(group.command[1])/target_filename
 
-			sjmanager.rs.download(
+			sjmanager.log.log('Downloading to {}'.format(
+				os.path.join(group.command[1],target_filename)))
+
+			rs.download(
 				url = url.content,
-				output_file_path = os.path.join(group.command[1],target_filename),
-				percent_callback = sjmanager.curl.OutputDialog('Downloading {}'.format(
+				output_file_path = sjmanager.util.Path(group.command[1])/target_filename,
+				percent_callback = sjmanager.downloader.meter.Dialog('Downloading {}'.format(
 					target_filename)))
+
+			sjmanager.log.log('Done')
 
 		assert first_filename != None
 
@@ -199,7 +233,7 @@ def main(input_file = None):
 				error = sjmanager.rar.unrar(
 					first_filename,
 					'Extracting {}'.format(first_filename),
-					working_dir = group.command[1],
+					working_dir = sjmanager.util.Path(group.command[1]),
 					password = password_attempt)
 
 				if not error:
@@ -210,7 +244,7 @@ def main(input_file = None):
 						first_filename,
 						error))
 
-				if return_code != sjmanager.dialog.MENU_RETURN_OK:
+				if return_code != sjmanager.dialog.MenuReturn.ok:
 					print(
 						"The following file couldn't be extracted: {}".format(
 							first_filename))
@@ -218,4 +252,17 @@ def main(input_file = None):
 
 				password_attempt = text
 
-main()
+config_file = configparser.ConfigParser()
+config_file.read(
+	str(
+		sjmanager.config_directory.config_directory() / "config.ini"))
+
+downloader = sjmanager.downloader.factory.create(
+		config_file)
+
+rs = sjmanager.rs.Account(
+	cookie = 'enc='+config_file.get('rs','cookie'),
+	downloader = downloader)
+
+main(
+	rs = rs)

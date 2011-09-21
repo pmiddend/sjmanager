@@ -3,8 +3,7 @@ import abc
 class Base(object):
 	__metaclass__ = abc.ABCMeta
 
-#	Not available in 3.1
-#	@abc.abstractstaticmethod
+	@abc.abstractstaticmethod
 	def available(config_file):
 		""" Return a boolean indicating if the downloader is available """
 		return

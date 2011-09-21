@@ -8,10 +8,7 @@ import re
 class Xqilla(sjmanager.xquery_processor.base.Base):
 	def available(
 		config_file):
-		if config_file.has_option('xqilla','executable'):
-			executable = config_file.get('xqilla','executable')
-		else:
-			executable = 'xqilla'
+		executable = config_file.get('xqilla','executable',fallback = 'xqilla')
 
 		if not sjmanager.util.program_in_path(executable):
 			sjmanager.log.log('xqilla not available: {} not in path'.format(executable))
@@ -23,10 +20,7 @@ class Xqilla(sjmanager.xquery_processor.base.Base):
 		self,
 		config_file):
 
-		if config_file.has_option('xqilla','executable'):
-			self.executable = config_file.get('xqilla','executable')
-		else:
-			self.executable = 'xqilla'
+		self.executable = config_file.get('xqilla','executable',fallback = 'xqilla')
 		assert sjmanager.util.program_in_path(self.executable)
 
 	def run(
