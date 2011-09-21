@@ -9,7 +9,7 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 	def __init__(self,config_file,xquery_processor):
 		self.executable = config_file.get('tidy','executable',fallback = 'tidy')
 		self.xquery_processor = xquery_processor
-	
+
 	def available(config_file):
 		executable = config_file.get('tidy','executable',fallback = 'tidy')
 
@@ -18,7 +18,7 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 			return False
 
 		return True
-	
+
 	def convert(self,f):
 		"""
 		f is a file object (or file-like object, is has to have ".name")
@@ -42,15 +42,15 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 		# Can't use check_call here because warnings count as "program failed"?
 		with open(os.devnull) as devnullfile:
 			subprocess.call(
-				xml_command, 
+				xml_command,
 				stdout = xml_tmp,
 				stderr = devnullfile)
 
 		xml_output.write(
 				self.xquery_processor.run_file(
-					sjmanager.util.Path('xqueries')/'strip_namespace.xquery', 
+					sjmanager.util.Path('xqueries')/'strip_namespace.xquery',
 					sjmanager.util.Path(
-						xml_tmp.name), 
+						xml_tmp.name),
 					clean = False))
 		xml_output.flush()
 

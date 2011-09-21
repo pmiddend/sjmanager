@@ -1,14 +1,16 @@
 import sjmanager.html_to_xml.tidy
+import sjmanager.html_to_xml.tagsoup
 
 def create(
 	config_file,
 	xquery_processor):
 	"""
-	Create a download manager. Checks which one exists and returns an instance to
+	Create a html->xml converter. Checks which one exists and returns an instance to
 	it.
 	"""
 	string_to_converter = {
-		'curl' : sjmanager.html_to_xml.tidy.Tidy 
+		'tagsoup' : sjmanager.html_to_xml.tagsoup.Tagsoup,
+		'tidy' : sjmanager.html_to_xml.tidy.Tidy
 	}
 
 	if config_file.has_option('global','converter'):
