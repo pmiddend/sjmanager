@@ -741,16 +741,7 @@ class Menu:
 
 					sjmanager.log.log('Making a database entry for the downloaded show')
 					self.sql.execute_and_commit('INSERT INTO downloaded (show_url,season_title,episode_title) VALUES (?,?,?)',(result['current_show'].url,result['season_title'],result['episode_title']))
-					sjmanager.dialog.show_messagebox("""Press OK.
-
-This is just shown to stop the video from playing inadvertently...
-
-What are you reading this for, anyway?
-Don't you have something to do? Like, watch this fine piece of entertainment, or... whatever you just downloaded, for instance?
-
-Come on now. Seriously? Get a life.
-
-Forget it, I'm outta here.""")
+					sjmanager.dialog.show_messagebox("Just press OK.")
 					sjmanager.log.log('Continuing')
 
 					return sjmanager.states.return_code_forward()
