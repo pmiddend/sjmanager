@@ -172,6 +172,7 @@ def main(
 			assert len(args) >= 2, 'download got {} arguments, expected at most 1. Arguments were: {}'.format(len(args)-1,args)
 			groups.append(
 				Group(
+					rs,
 					args))
 			continue
 		else:
