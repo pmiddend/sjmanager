@@ -13,7 +13,7 @@ def create(
 		'tidy' : sjmanager.html_to_xml.tidy.Tidy
 	}
 
-	if config_file.has_option('global','converter'):
+	if config_file.has_option('global','html_converter'):
 		preferred_converter = config_file.get('global','html_converter')
 
 		if not preferred_converter in string_to_converter:
@@ -23,13 +23,14 @@ def create(
 					list(
 						string_to_converter.keys())))
 
-		if string_to_converter[preferred_converter].available() == False:
+		if string_to_converter[preferred_converter].available(config_file) == False:
 			raise Exception(
 				"The requested converter '{}' is not available".format(
 					preferred_converter))
 
 		return string_to_converter[preferred_converter](
-			config_file)
+			config_file,
+			xquery_processor)
 
 	for s in string_to_converter:
 		if string_to_converter[s].available(config_file) == False:
