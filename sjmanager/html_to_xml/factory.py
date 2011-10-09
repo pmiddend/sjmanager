@@ -13,7 +13,7 @@ def create(
 		'tidy' : sjmanager.html_to_xml.tidy.Tidy
 	}
 
-	if config_file.has_option('global','converter'):
+	if config_file.has_option('global','html_converter'):
 		preferred_converter = config_file.get('global','html_converter')
 
 		if not preferred_converter in string_to_converter:
