@@ -4,6 +4,7 @@ import sjmanager.html_to_xml.base
 import tempfile
 import subprocess
 import os
+import re
 
 class Tidy(sjmanager.html_to_xml.base.Base):
 	def __init__(self,config_file,xquery_processor):
@@ -24,8 +25,8 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 		f is a file object (or file-like object, is has to have ".name")
 		"""
 		# Has to be named since want to pass it to xqilla
-		xml_tmp = tempfile.NamedTemporaryFile()
-		xml_output = tempfile.NamedTemporaryFile(mode='w')
+		html_input = tempfile.NamedTemporaryFile('r+', encoding='utf8')
+		xml_output = tempfile.NamedTemporaryFile(mode='w', encoding='ascii')
 
 		_options = [
 				'-numeric',
@@ -35,28 +36,38 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 				'--add-xml-decl', 'true',
 				'--output-xml', 'true',
 				'--escape-cdata', 'true',
-				'--doctype', 'omit']
+				'--doctype', 'omit',
+				'--show-warnings', 'false',
+				# causes problems downstream in xquery
+				#'--new-empty-tags', 'g:plusone',
+				'--new-blocklevel-tags', 'htmldir']
 
-		xml_command = [self.executable] + _options + [f.name]
+		html_raw = f.read().decode('utf8')
+		sanitized = re.sub(r'\s(xmlns=".*?")\s', '', html_raw, re.M)
+		sanitized = re.sub(r'<g:plusone.*?>.*?</g:plusone>', '', sanitized, re.M)
+
+		html_input.write(sanitized)
+		html_input.flush()
+		html_input.seek(0)
+
+		xml_command = [self.executable] + _options + [html_input.name]
 
 		# Can't use check_call here because warnings count as "program failed"?
-		with open(os.devnull) as devnullfile:
-			returncode = subprocess.call(
-				xml_command,
-				stdout = xml_tmp,
-				stderr = devnullfile)
+		errfile = tempfile.TemporaryFile('r+')
+		returncode = subprocess.call(
+			xml_command,
+			stdout = xml_output,
+			stderr = errfile)
 		# 0 is fine, 1 is warnings, 2 is errors, others may be added in the future,
 		# who knows...
 		if returncode > 1:
+			errfile.seek(0)
+			sjmanager.log.log(errfile.read())
 			raise Exception(
-				"Oh no, something went terribly wrong with tidy.")
+				"Oh no, something went terribly wrong with tidy. See log for details.")
 
-		xml_output.write(
-				self.xquery_processor.run_file(
-					sjmanager.util.Path('xqueries')/'strip_namespace.xquery',
-					sjmanager.util.Path(
-						xml_tmp.name),
-					clean = False))
+		sjmanager.log.log(sanitized)
+		xml_output.write(sanitized)
 		xml_output.flush()
 
 		return xml_output
