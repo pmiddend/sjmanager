@@ -41,10 +41,15 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 
 		# Can't use check_call here because warnings count as "program failed"?
 		with open(os.devnull) as devnullfile:
-			subprocess.call(
+			returncode = subprocess.call(
 				xml_command,
 				stdout = xml_tmp,
 				stderr = devnullfile)
+		# 0 is fine, 1 is warnings, 2 is errors, others may be added in the future,
+		# who knows...
+		if returncode > 1:
+			raise Exception(
+				"Oh no, something went terribly wrong with tidy.")
 
 		xml_output.write(
 				self.xquery_processor.run_file(
