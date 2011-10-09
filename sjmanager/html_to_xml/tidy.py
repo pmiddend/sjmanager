@@ -25,8 +25,9 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 		f is a file object (or file-like object, is has to have ".name")
 		"""
 		# Has to be named since want to pass it to xqilla
-		html_input = tempfile.NamedTemporaryFile('r+', encoding='utf8')
-		xml_output = tempfile.NamedTemporaryFile(mode='w', encoding='ascii')
+		html_input = tempfile.NamedTemporaryFile('r+b')
+		xml_tmp = tempfile.NamedTemporaryFile(mode='r+')
+		xml_output = tempfile.NamedTemporaryFile(mode='w')
 
 		_options = [
 				'-numeric',
@@ -37,16 +38,14 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 				'--output-xml', 'true',
 				'--escape-cdata', 'true',
 				'--doctype', 'omit',
-				'--show-warnings', 'false',
+				'--show-warnings', 'false']
 				# causes problems downstream in xquery
 				#'--new-empty-tags', 'g:plusone',
-				'--new-blocklevel-tags', 'htmldir']
 
-		html_raw = f.read().decode('utf8')
-		sanitized = re.sub(r'\s(xmlns=".*?")\s', '', html_raw, re.M)
+		sanitized = f.read().decode('utf8')
 		sanitized = re.sub(r'<g:plusone.*?>.*?</g:plusone>', '', sanitized, re.M)
 
-		html_input.write(sanitized)
+		html_input.write(sanitized.encode('ascii', errors='xmlcharrefreplace'))
 		html_input.flush()
 		html_input.seek(0)
 
@@ -56,7 +55,7 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 		errfile = tempfile.TemporaryFile('r+')
 		returncode = subprocess.call(
 			xml_command,
-			stdout = xml_output,
+			stdout = xml_tmp,
 			stderr = errfile)
 		# 0 is fine, 1 is warnings, 2 is errors, others may be added in the future,
 		# who knows...
@@ -66,7 +65,9 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 			raise Exception(
 				"Oh no, something went terribly wrong with tidy. See log for details.")
 
-		sjmanager.log.log(sanitized)
+		xml_tmp.seek(0)
+		sanitized = xml_tmp.read()
+		sanitized = re.sub(r'xmlns=".*?"', '', sanitized, re.M)
 		xml_output.write(sanitized)
 		xml_output.flush()
 

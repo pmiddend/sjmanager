@@ -15,7 +15,7 @@ class Xqilla(sjmanager.xquery_processor.base.Base):
 			return False
 
 		return True
-	
+
 	def __init__(
 		self,
 		config_file):
@@ -46,8 +46,8 @@ class Xqilla(sjmanager.xquery_processor.base.Base):
 		# FIXME: this can't be very efficient...
 		if clean:
 			subprocess_output = re.sub(
-				r'\n+', 
-				r'\n', 
+				r'\n+',
+				r'\n',
 				subprocess_output)
 
 			subprocess_output = [line.lstrip() for line in subprocess_output.split('\n')]
