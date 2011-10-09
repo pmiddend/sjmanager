@@ -1,0 +1,26 @@
+#[global]
+# The basic site domain name...
+#site =
+#
+# Passwords to try for encrypted rar archives, comma-separated
+#passwords =
+#
+# The downloader backend.
+# Available: curl
+#downloader = curl
+#
+# Program to use for converting received html to parseable xml.
+# Available: (html)tidy, tagsoup
+#html_converter = tidy
+#
+# Backend for interpreting XQueries.
+# Available: xqilla
+#xquery_tool = xqilla
+#
+# The video player executable and/or arguments.
+# This value will be split via shlex.split (think: bash command line)
+#movie_player =
+
+#[rs]
+# *value* of your RS cookie
+#cookie = <value>
