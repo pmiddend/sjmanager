@@ -20,6 +20,7 @@ class Account:
 
 		self.cookie = cookie
 		self.downloader = downloader
+		self.valid_link_regex = r'^https?://(www\.)?rapidshare\.com'
 	
 	def from_auth_data(
 		username,
@@ -40,14 +41,14 @@ class Account:
 
 		assert isinstance(link,str)
 
-		if re.search(r'^http://(www\.)?rapidshare\.com',link):
+		if re.search(self.valid_link_regex,link):
 			return link
 
 		locations = self.downloader.track_link(
 			link)
 
 		for location in locations:
-			if re.search(r'^https?://(www\.)?rapidshare\.com',location):
+			if re.search(self.valid_link_regex,location):
 				return location
 
 		raise Exception("Couldn't make '{}' to a proper RS link. The locations were {}".format(link,locations))
@@ -69,7 +70,7 @@ class Account:
 
 			return code_to_string[result_code]
 
-		assert re.match(r'https?://(www\.)?rapidshare\.com',link)
+		assert re.match(self.valid_link_regex,link)
 
 		to_check = re.sub(r'.*rapidshare\.com/files/([^\/]*)/(.*)',r'files=\1&filenames=\2',link)
 
