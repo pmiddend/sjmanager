@@ -53,6 +53,9 @@ def show_inputbox(text,initial_text = None):
 		return _execute_dialog_safely(_intro + ['--inputbox',text,'0','0',initial_text])
 	return _execute_dialog_safely(_intro + ['--inputbox',text,'0','0'])
 
+def show_passwordbox(text):
+	return _execute_dialog_safely(_intro + ['--passwordbox',text,'0','0'])
+
 def show_yesno(text):
 	return_code, output = _execute_dialog_safely(
 		_intro + ['--yesno',text,'0','0'])
