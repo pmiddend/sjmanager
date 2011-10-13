@@ -7,9 +7,8 @@ import os
 import re
 
 class Tidy(sjmanager.html_to_xml.base.Base):
-	def __init__(self,config_file,xquery_processor):
+	def __init__(self,config_file):
 		self.executable = config_file.get('tidy','executable',fallback = 'tidy')
-		self.xquery_processor = xquery_processor
 
 	def available(config_file):
 		executable = config_file.get('tidy','executable',fallback = 'tidy')

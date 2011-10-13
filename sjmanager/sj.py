@@ -2,6 +2,7 @@ import sjmanager.downloader.base
 import sjmanager.downloader.meter
 import sjmanager.xquery_processor.base
 import sjmanager.sql.base
+import sjmanager.captcha.base
 import sjmanager.dialog
 import sjmanager.html_to_xml.base
 import sjmanager.log
@@ -80,18 +81,21 @@ class Sj:
 		sql,
 		downloader,
 		html_converter,
-		xquery_processor):
+		xquery_processor,
+		captcha):
 
 		assert isinstance(sql,sjmanager.sql.base.Base)
 		assert isinstance(downloader,sjmanager.downloader.base.Base)
 		assert isinstance(html_converter,sjmanager.html_to_xml.base.Base)
 		assert isinstance(xquery_processor,sjmanager.xquery_processor.base.Base)
+		assert isinstance(captcha,sjmanager.captcha.base.Base)
 
 		self.config_file = config_file
 		self.sql = sql
 		self.downloader = downloader
 		self.html_converter = html_converter
 		self.xquery_processor = xquery_processor
+		self.captcha = captcha
 		self.show_url_to_show = {}
 		self.site = self.config_file.get('global', 'site')
 		# Initial touch
@@ -117,23 +121,9 @@ class Sj:
 		"""
 		return hashlib.sha1(bytes(show_url+season_title+episode_title,encoding='utf8')).hexdigest()
 
-	def resolve_captcha_image(self,image_file_name):
-		"""
-		Gets an image file name, displays the image somehow, returns the captcha
-		string
-		"""
-		assert isinstance(image_file_name,sjmanager.util.Path)
-
-		subprocess.check_call(['feh',str(image_file_name)])
-		return_code,text = sjmanager.dialog.show_inputbox('What was the captcha text?')
-		if return_code != sjmanager.dialog.MenuReturn.ok:
-			return None
-		return text
-
 	def resolve_linklist(
 		self,
-		episode_link,
-		captcha_resolver):
+		episode_link):
 		"""
 		Gets an episode link, returns a list of download links
 		"""
@@ -154,7 +144,7 @@ class Sj:
 
 		captcha_code = ''
 		with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha image')) as captcha_image_file:
-			captcha_code = captcha_resolver(
+			captcha_code = self.captcha.resolve(
 				sjmanager.util.Path(
 					captcha_image_file.name))
 

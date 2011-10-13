@@ -1,5 +1,6 @@
 import os
 import os.path
+import sjmanager.log
 
 class Path:
 	def __init__(self,s):
@@ -76,3 +77,39 @@ def strip_prefix_suffix(strings, case_sensitive = True):
 
 	left, right = prefix(strings), suffix(strings)
 	return [string[left:len(string)-right] for string in strings]
+
+def abstract_factory(
+	config_file,
+	description,
+	class_list):
+
+	if config_file.has_option('global',description):
+		preferred_class = config_file.get('global',description)
+
+		sjmanager.log.log("The config file contains a \"preferred {}\": {}".format(description,preferred_class))
+
+		for c in class_list:
+			if c.__name__ != preferred_class.capitalize():
+				continue
+
+			sjmanager.log.log("Found it in the class list!")
+
+			if c.available(config_file) == False:
+				raise Exception(
+					"The requested preferred {} '{}' is not available".format(
+						description,
+						preferred_class))
+
+			sjmanager.log.log("{} {} is available, constructing it.".format(description,preferred_class))
+
+			return c(
+				config_file)
+
+	for c in class_list:
+		sjmanager.log.log('Testing {} {} for availability...'.format(description,c.__name__))
+		if c.available(config_file):
+			sjmanager.log.log("It's available!...")
+			return c(
+				config_file)
+
+	raise Exception('No {} could be found (see the log for details)'.format(description))

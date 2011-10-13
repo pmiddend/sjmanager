@@ -515,8 +515,7 @@ class Menu:
 		assert isinstance(result['episode_link'],str)
 
 		result['linklist'] = self.sj.resolve_linklist(
-			result['episode_link'],
-			self.sj.resolve_captcha_image)
+			result['episode_link'])
 
 		if result['linklist'] == None:
 			return sjmanager.states.return_code_back(1)
