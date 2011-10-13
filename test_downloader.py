@@ -119,6 +119,12 @@ def _https_test(
 
 	print('PASSED.')
 
+def _track_test(downloader):
+	urls = downloader.track_link(
+		'http://download.serienjunkies.org/go-61a36d5fc509e54224066d0240668c507c7431a328dde12c50cce2e8f1d017bec3b5da5f1749752f9eb55128d8b88e3f4c5dc90abc6978b94a4bf77bb2d93253c6136a7f86298e17/')
+
+	print(urls)
+
 config_file = configparser.ConfigParser()
 config_file.read(
 	str(
@@ -127,13 +133,17 @@ config_file.read(
 downloader = sjmanager.downloader.factory.create(
 	config_file)
 
+#_simplest_test(
+#	downloader)
+#_simplest_test_dialog(
+#	downloader)
+#_output_file_path(
+#	downloader)
+#_failure_test(
+#	downloader)
 
-_simplest_test(
-	downloader)
-_simplest_test_dialog(
-	downloader)
-_output_file_path(
-	downloader)
-_failure_test(
+_track_test(
 	downloader)
 #_https_test()
+
+

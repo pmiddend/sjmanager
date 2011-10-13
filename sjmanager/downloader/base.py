@@ -9,6 +9,15 @@ class Base(object):
 		return
 
 	@abc.abstractmethod
+	def touch(
+		self,
+		url):
+		"""
+		Just "visit" the url, don't download it, don't write the output somewhere.
+		"""
+		pass
+
+	@abc.abstractmethod
 	def download(
 		self,
 		url,

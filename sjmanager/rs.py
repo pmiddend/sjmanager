@@ -15,13 +15,12 @@ class Account:
 		cookie,
 		downloader):
 
-		assert isinstance(cookie,str)
 		assert isinstance(downloader,sjmanager.downloader.base.Base)
 
 		self.cookie = cookie
 		self.downloader = downloader
-		self.valid_link_regex = r'^https?://(www\.)?rapidshare\.com'
-	
+		self.valid_link_regex = r'^https?://([^.]*\.)?rapidshare\.com'
+
 	def from_auth_data(
 		username,
 		password,
@@ -34,7 +33,7 @@ class Account:
 		return Account(
 			'no cookie',
 			downloader)
-	
+
 	def make_proper_link(
 		self,
 		link):
@@ -96,9 +95,9 @@ class Account:
 	def download(
 		self,
 		**args):
-	
+
 		sjmanager.log.log('rs: Downloading something')
 
 		return self.downloader.download(
-			cookie = self.cookie, 
+			cookie = self.cookie,
 			**args)

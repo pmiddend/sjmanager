@@ -123,6 +123,26 @@ class Curl(sjmanager.downloader.base.Base):
 
 		return True
 
+	def touch(
+		self,
+		url):
+
+		assert isinstance(url,str)
+
+		sjmanager.log.log('Touching {}'.format(url))
+
+		# construct the curl commandline...
+		# --head is important, it only does HEAD instead of a full request
+		# Hopefully enough to keep the site satisfied
+		cmd = [self.executable,'--compressed','-L', '-k','--head',url]
+
+		with open(os.devnull) as devnullfile:
+			subprocess.check_call(
+				cmd,
+				stdout = devnullfile,
+				stderr = devnullfile)
+
+
 	def download(
 		self,
 		url,

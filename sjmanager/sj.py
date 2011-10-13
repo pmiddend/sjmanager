@@ -18,7 +18,7 @@ import functools
 # API (what a user needs):
 #
 #
-# 
+#
 # The class "Sj" is the mother class. It...
 #
 # - manages the show caches (last watched and downloaded)
@@ -68,7 +68,7 @@ import functools
 # There's another problem: A single season link leads to many concrete seasons
 # (called "posts"). So to construct the list of seasons with title 't', we
 # follow each season link belonging to that (mangled) title and retrieve a list
-# of posts. 
+# of posts.
 #
 # So in summation, a title results in a list of seasons, and the list of
 # seasons results in a list of posts. The user, however, only has the
@@ -81,7 +81,7 @@ class Sj:
 		downloader,
 		html_converter,
 		xquery_processor):
-		
+
 		assert isinstance(sql,sjmanager.sql.base.Base)
 		assert isinstance(downloader,sjmanager.downloader.base.Base)
 		assert isinstance(html_converter,sjmanager.html_to_xml.base.Base)
@@ -94,8 +94,11 @@ class Sj:
 		self.xquery_processor = xquery_processor
 		self.show_url_to_show = {}
 		self.site = self.config_file.get('global', 'site')
-		self.downloader.download(url = 'http://{}'.format(self.site),percent_callback = lambda x : None)
-	
+		# Initial touch
+#		self.downloader.download(url = 'http://{}'.format(self.site),percent_callback = lambda x : None)
+		self.downloader.touch(
+			url = 'http://{}'.format(self.site))
+
 	def shows_in_watch_cache(
 		self):
 		"""

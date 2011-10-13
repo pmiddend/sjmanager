@@ -1,4 +1,5 @@
 import sjmanager.downloader.curl
+import sjmanager.downloader.native
 import sjmanager.log
 
 def create(
@@ -11,7 +12,8 @@ def create(
 	sjmanager.log.log("Trying to create a downloader")
 
 	string_to_downloader = {
-		'curl' : sjmanager.downloader.curl.Curl 
+		'native' : sjmanager.downloader.native.Native,
+		'curl' : sjmanager.downloader.curl.Curl
 	}
 
 	if config_file.has_option('global','downloader'):

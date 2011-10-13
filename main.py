@@ -30,7 +30,7 @@ sql = sjmanager.sql.factory.create(
 	config_file)
 
 rs = sjmanager.rs.Account(
-	'enc='+config_file.get('rs','cookie'),
+	('enc',config_file.get('rs','cookie')),
 	downloader)
 
 sj = sjmanager.sj.Sj(
