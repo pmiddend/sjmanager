@@ -17,6 +17,10 @@
 # Available: xqilla
 #xquery_tool = xqilla
 #
+# Backend for resolving the captchas.
+# Available: imageViewer
+#captcha = imageViewer
+#
 # The video player executable and/or arguments.
 # This value will be split via shlex.split (think: bash command line)
 #movie_player =
