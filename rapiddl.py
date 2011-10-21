@@ -262,7 +262,7 @@ downloader = sjmanager.downloader.factory.create(
 		config_file)
 
 rs = sjmanager.rs.Account(
-	cookie = 'enc='+config_file.get('rs','cookie'),
+	cookie = ('enc',config_file.get('rs','cookie')),
 	downloader = downloader)
 
 main(

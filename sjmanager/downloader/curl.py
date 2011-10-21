@@ -154,7 +154,6 @@ class Curl(sjmanager.downloader.base.Base):
 		assert isinstance(url,str)
 		assert output_file_path == None or isinstance(output_file_path,sjmanager.util.Path)
 		assert post_dict == None or isinstance(post_dict,dict)
-		assert cookie == None or isinstance(cookie,str)
 
 		sjmanager.log.log('Downloading {}'.format(url))
 
@@ -180,7 +179,7 @@ class Curl(sjmanager.downloader.base.Base):
 					[])
 
 		if cookie:
-			cmd += ['--cookie', cookie]
+			cmd += ['--cookie', cookie[0]+'='+cookie[1]]
 
 		cmd.append(
 			url)
