@@ -109,14 +109,14 @@ class Sj:
 		Returns true if there are shows in the watch cache, false otherwise.
 		"""
 		return self.sql.execute('SELECT COUNT(*) c FROM last_watched').fetchone()['c'] > 0
-	
+
 	def video_file_name(
 		self,
 		show_url,
 		season_title,
 		episode_title):
 		"""
-		Given a url, a mangled season  title and a mangled episode title, return 	
+		Given a url, a mangled season  title and a mangled episode title, return
 		a filename
 		"""
 		return hashlib.sha1(bytes(show_url+season_title+episode_title,encoding='utf8')).hexdigest()
@@ -130,53 +130,80 @@ class Sj:
 
 		assert isinstance(episode_link,str)
 
+		link_list_xquery = 'data(doc("<<<INPUTFILE>>>")//form[contains(@action, "http://download.{}/")]/@action)'.format(self.site)
+
 		captcha_url = ''
 		form_name = ''
-		with self.html_converter.convert(self.downloader.download(url = episode_link,percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha html file'))) as xmlfile:
+
+		# This is more complex than you'd originally think. The problem
+		# is that we _might_ get a captcha, but maybe we get the page
+		# with the linklist directly! So first, download and parse the episode link...
+		with self.html_converter.convert(self.downloader.download(url = episode_link,percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha html file'))) as original_xmlfile:
+
+			# ...now try to extract the captcha url and the form
+			# name. If this fails, captcha_url will be an empty string
 			captcha_url = self.xquery_processor.run(
 				'data(doc("<<<INPUTFILE>>>")//*[@id="postit"]//img[1]/@src)',
 				sjmanager.util.Path(
-					xmlfile.name))[0]
+					original_xmlfile.name))[0]
 			form_name = self.xquery_processor.run(
 				'data(doc("<<<INPUTFILE>>>")//input[@name="s"]/@value)',
 				sjmanager.util.Path(
-					xmlfile.name))[0]
+					original_xmlfile.name))[0]
 
-		captcha_code = ''
-		with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha image')) as captcha_image_file:
-			captcha_code = self.captcha.resolve(
-				sjmanager.util.Path(
-					captcha_image_file.name))
+			# If it's not an empty string, we have a captcha url...
+			if captcha_url != '':
+				# ...so download the captcha image and resolve its text.
+				captcha_code = ''
+				with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha image')) as captcha_image_file:
+					captcha_code = self.captcha.resolve(
+						sjmanager.util.Path(
+							captcha_image_file.name))
 
-			# This is a special case: We have to differentiate between "wrong
-			# captcha" and, for example, user signaled he wants to go back
-			if captcha_code == None:
-				return None
+					# This is a special case: We have to differentiate between "wrong
+					# captcha" and, for example, user signaled he wants to go back
+					if captcha_code == None:
+						return None
 
-		post_dict = {
-			's' : form_name,
-			'c' : captcha_code,
-			'action' : 'Download'
-		}
+				# Then, send the resolved text to the main page and _then_ receive the file with the link list
+				post_dict = {
+					's' : form_name,
+					'c' : captcha_code,
+					'action' : 'Download'
+				}
 
-		link_list_string = ''
+				link_list_string = ''
 
-		with self.downloader.download(url = episode_link,post_dict = post_dict,percent_callback = sjmanager.downloader.meter.Dialog('Downloading linklist')) as response_html_file:
-			sjmanager.log.log('got the html file '+str(response_html_file.read(),encoding='utf8'))
-			response_html_file.seek(0)
-			response_xml_file = self.html_converter.convert(response_html_file)
-			link_list_string = self.xquery_processor.run(
-				'data(doc("<<<INPUTFILE>>>")//form[contains(@action, "http://download.{}/")]/@action)'.format(self.site),
-				sjmanager.util.Path(
-					response_xml_file.name))
+				with self.downloader.download(url = episode_link,post_dict = post_dict,percent_callback = sjmanager.downloader.meter.Dialog('Downloading linklist')) as response_html_file:
+					sjmanager.log.log('got the html file '+str(response_html_file.read(),encoding='utf8'))
+					response_html_file.seek(0)
+					response_xml_file = self.html_converter.convert(response_html_file)
+					# Finally, extract the links
+					link_list_string = self.xquery_processor.run(
+						link_list_xquery,
+						sjmanager.util.Path(
+							response_xml_file.name))
 
-		result = link_list_string
+				result = link_list_string
 
-		if len(result) == 1 and result[0] == '':
-			return []
+				if len(result) == 1 and result[0] == '':
+					return []
 
-		return result
-	
+				return result
+			else:
+				# If we didn't get a captcha url, try to extract the links directly
+				link_list_string = self.xquery_processor.run(
+					link_list_xquery,
+					sjmanager.util.Path(
+						original_xmlfile.name))
+
+				result = link_list_string
+
+				if len(result) == 1 and result[0] == '':
+					return []
+
+				return result
+
 	def find_shows(
 		self,
 		name = None,
