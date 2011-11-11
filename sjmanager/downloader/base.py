@@ -13,7 +13,7 @@ class Base(object):
 		self,
 		url):
 		"""
-		Just "visit" the url, don't download it, don't write the output somewhere.
+		Just "visit" the url, don't download it, don't write the output anywhere.
 		"""
 		pass
 

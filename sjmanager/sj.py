@@ -137,6 +137,7 @@ class Sj:
 				'data(doc("<<<INPUTFILE>>>")//*[@id="postit"]//img[1]/@src)',
 				sjmanager.util.Path(
 					xmlfile.name))[0]
+			sjmanager.log.log('captcha URL is "{}"'.format(captcha_url))
 			form_name = self.xquery_processor.run(
 				'data(doc("<<<INPUTFILE>>>")//input[@name="s"]/@value)',
 				sjmanager.util.Path(

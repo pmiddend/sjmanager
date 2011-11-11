@@ -6,5 +6,5 @@ def create(
 
 	return sjmanager.util.abstract_factory(
 		config_file,
-		'xquery processor',
+		'xquery_processor',
 		[sjmanager.xquery_processor.xqilla.Xqilla])

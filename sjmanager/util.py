@@ -80,13 +80,13 @@ def strip_prefix_suffix(strings, case_sensitive = True):
 
 def abstract_factory(
 	config_file,
-	description,
+	option,
 	class_list):
 
-	if config_file.has_option('global',description):
-		preferred_class = config_file.get('global',description)
+	if config_file.has_option('global',option):
+		preferred_class = config_file.get('global',option)
 
-		sjmanager.log.log("The config file contains a \"preferred {}\": {}".format(description,preferred_class))
+		sjmanager.log.log("The config file contains a \"preferred {}\": {}".format(option,preferred_class))
 
 		for c in class_list:
 			if c.__name__ != preferred_class.capitalize():
@@ -97,19 +97,19 @@ def abstract_factory(
 			if c.available(config_file) == False:
 				raise Exception(
 					"The requested preferred {} '{}' is not available".format(
-						description,
+						option,
 						preferred_class))
 
-			sjmanager.log.log("{} {} is available, constructing it.".format(description,preferred_class))
+			sjmanager.log.log("{} {} is available, constructing it.".format(option,preferred_class))
 
 			return c(
 				config_file)
 
 	for c in class_list:
-		sjmanager.log.log('Testing {} {} for availability...'.format(description,c.__name__))
+		sjmanager.log.log('Testing {} {} for availability...'.format(option,c.__name__))
 		if c.available(config_file):
 			sjmanager.log.log("It's available!...")
 			return c(
 				config_file)
 
-	raise Exception('No {} could be found (see the log for details)'.format(description))
+	raise Exception('No {} could be found (see the log for details)'.format(option))

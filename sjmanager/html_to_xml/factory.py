@@ -7,5 +7,5 @@ def create(
 
 	return sjmanager.util.abstract_factory(
 		config_file,
-		'html converter',
+		'html_converter',
 		[sjmanager.html_to_xml.tagsoup.Tagsoup, sjmanager.html_to_xml.tidy.Tidy])

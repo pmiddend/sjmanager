@@ -6,5 +6,5 @@ def create(
 
 	return sjmanager.util.abstract_factory(
 		config_file,
-		'captcha resolver',
+		'captcha_resolver',
 		[sjmanager.captcha.image_viewer.ImageViewer])
