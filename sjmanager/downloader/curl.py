@@ -137,7 +137,7 @@ class Curl(sjmanager.downloader.base.Base):
 		cmd = [self.executable,'--compressed','-L', '-k','--head',url]
 
 		with open(os.devnull) as devnullfile:
-			subprocess.check_call(
+			subprocess.call(
 				cmd,
 				stdout = devnullfile,
 				stderr = devnullfile)
