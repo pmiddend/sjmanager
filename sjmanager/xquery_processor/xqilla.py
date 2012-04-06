@@ -32,6 +32,7 @@ class Xqilla(sjmanager.xquery_processor.base.Base):
 
 		with tempfile.NamedTemporaryFile(mode = 'w+') as xquery_command_file:
 			xquery_tool = [self.executable,xquery_command_file.name]
+			sjmanager.log.log("xqilla command line is {}".format(xquery_tool))
 			xquery_command_file.write(
 				command.replace(
 					'<<<INPUTFILE>>>',

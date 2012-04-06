@@ -28,6 +28,7 @@ class Tagsoup(sjmanager.html_to_xml.base.Base):
 		_options = ['--nons']
 
 		xml_command = [self.executable] + _options + [f.name]
+		sjmanager.log.log("tagsoup command line is {}".format(xml_command))
 
 		with open(os.devnull) as devnullfile:
 			subprocess.check_call(

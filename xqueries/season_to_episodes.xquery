@@ -9,7 +9,7 @@ let $info := (
 	,<info original="Format" translation="format" />
 	,<info original="Sprache" translation="language" />
 )
-let $entries := $season/p/strong/text()[contains(., "Dauer") or contains(., "Download")]/../..
+let $entries := $season//strong/text()[contains(., "Dauer") or contains(., "Download")]/../..
 return
 	for $entry in $entries
 		let $linktext := $entry/text()[contains(., "rapidshare.com")]

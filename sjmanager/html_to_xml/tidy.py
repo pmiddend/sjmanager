@@ -49,6 +49,7 @@ class Tidy(sjmanager.html_to_xml.base.Base):
 		html_input.seek(0)
 
 		xml_command = [self.executable] + _options + [html_input.name]
+		sjmanager.log.log("htmltidy command line is {}".format(xml_command))
 
 		# Can't use check_call here because warnings count as "program failed"?
 		errfile = tempfile.TemporaryFile('r+')
