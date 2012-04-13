@@ -175,7 +175,7 @@ class Sj:
 				link_list_string = ''
 
 				with self.downloader.download(url = episode_link,post_dict = post_dict,percent_callback = sjmanager.downloader.meter.Dialog('Downloading linklist')) as response_html_file:
-					sjmanager.log.log('got the html file '+str(response_html_file.read(),encoding='utf8'))
+					#sjmanager.log.log('got the html file '+str(response_html_file.read(),encoding='utf8'))
 					response_html_file.seek(0)
 					response_xml_file = self.html_converter.convert(response_html_file)
 					# Finally, extract the links

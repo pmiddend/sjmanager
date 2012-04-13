@@ -6,9 +6,8 @@ import subprocess
 
 class ImageViewer(sjmanager.captcha.base.Base):
 	def __init__(
-		self,
-		config_file):
-
+			self,
+			config_file):
 		self.program = 'feh'
 
 		if not sjmanager.util.program_in_path(self.program):
@@ -17,14 +16,12 @@ class ImageViewer(sjmanager.captcha.base.Base):
 		sjmanager.log.log('Chose {} as captcha resolve image viewer'.format(self.program))
 
 	def available(
-		config_file):
-
+			config_file):
 		return sjmanager.util.program_in_path('feh') or sjmanager.util.program_in_path('display')
 
 	def resolve(
-		self,
-		image_file_name):
-
+			self,
+			image_file_name):
 		assert isinstance(image_file_name,sjmanager.util.Path)
 
 		subprocess.check_call([self.program,str(image_file_name)])

@@ -13,17 +13,17 @@ class Path:
 			os.path.join(
 				self.s,
 				other))
-	
+
 	def __repr__(self):
 		return os.path.abspath(self.s).__repr__()
 
 	def __str__(self):
 		return os.path.abspath(self.s).__str__()
-	
+
 	def is_directory(self):
 		return os.path.isdir(
 			self.s)
-	
+
 	def mkdir_recursive(self):
 		os.makedirs(
 			self.s)
@@ -47,7 +47,7 @@ def program_in_path(program):
 	results = list(filter(
 			os.path.exists,
 			[
-				os.path.join(path, program) 
+				os.path.join(path, program)
 				for path in os.environ['PATH'].split(
 					os.path.pathsep)
 			]))
