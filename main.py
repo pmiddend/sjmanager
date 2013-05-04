@@ -8,7 +8,7 @@ import sjmanager.sql.factory
 import sjmanager.config_directory
 import sjmanager.sj
 import sjmanager.menu
-import sjmanager.rs
+import sjmanager.ul
 import sjmanager.util
 import configparser
 
@@ -29,8 +29,8 @@ html_converter = sjmanager.html_to_xml.factory.create(
 sql = sjmanager.sql.factory.create(
 	config_file)
 
-rs = sjmanager.rs.Account(
-	('enc',config_file.get('rs','cookie')),
+ul = sjmanager.ul.Account(
+	('login',config_file.get('ul','cookie')),
 	downloader)
 
 captcha = sjmanager.captcha.factory.create(
@@ -45,7 +45,7 @@ sj = sjmanager.sj.Sj(
 	captcha)
 
 m = sjmanager.menu.Menu(
-	rs,
+	ul,
 	sj,
 	downloader,
 	xquery_processor,

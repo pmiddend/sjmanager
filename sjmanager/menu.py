@@ -16,19 +16,19 @@ import re
 class Menu:
 	def __init__(
 		self,
-		rs,
+		ul,
 		sj,
 		downloader,
 		xquery_processor,
 		sql):
 
-		assert isinstance(rs,sjmanager.rs.Account)
+		assert isinstance(ul,sjmanager.ul.Account)
 		assert isinstance(sj,sjmanager.sj.Sj)
 		assert isinstance(downloader,sjmanager.downloader.base.Base)
 		assert isinstance(xquery_processor,sjmanager.xquery_processor.base.Base)
 		assert isinstance(sql,sjmanager.sql.base.Base)
 
-		self.rs = rs
+		self.ul = ul
 		self.sj = sj
 		self.downloader = downloader
 		self.xquery_processor = xquery_processor
@@ -527,7 +527,7 @@ class Menu:
 		linklist = []
 		for raw_link in result['linklist']:
 			linklist.append(
-				self.rs.make_proper_link(
+				self.ul.make_proper_link(
 					raw_link))
 
 		result['linklist'] = linklist
@@ -629,7 +629,7 @@ class Menu:
 			counter = 1
 			# Ok, we've got the links. Check if they're valid (one by one)
 			for link in result['linklist']:
-				result_code,result_string = self.rs.check_link(
+				result_code,result_string = self.ul.check_link(
 					link)
 
 				link_pm.update(
@@ -639,7 +639,7 @@ class Menu:
 				counter += 1
 
 				# If one of them is not valid, display a message and return
-				if not result_code == sjmanager.rs.CheckLink.ok:
+				if not result_code == sjmanager.ul.CheckLink.ok:
 					link_pm.close()
 					result['download_error'] = 'At least one link was not valid. The reason is:\n\n'+result_string+'\n\nTaking you back to the quality chooser'
 					return sjmanager.states.return_code_forward()
@@ -655,7 +655,7 @@ class Menu:
 			sjmanager.log.log('Created a temporary directory '+str(tempdir))
 
 			for link in result['linklist']:
-				self.rs.download(
+				self.ul.download(
 					url = link,
 					output_file_path = tempdir / os.path.basename(urllib.parse.urlparse(link).path),
 					percent_callback = sjmanager.downloader.meter.Dialog(

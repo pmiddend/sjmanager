@@ -17,20 +17,18 @@ class Dialog:
 	def __del__(self):
 		self.progress_meter.close()
 
+class Simple:
+	def __init__(self,title):
+		assert isinstance(title,str)
 
-def simple(
-	percent):
+	def __call__(self,percent):
+		sjmanager.log.log('Got {} percent (type {})'.format(percent,type(percent)))
 
-	sjmanager.log.log('Got {} percent (type {})'.format(percent,type(percent)))
+		assert isinstance(percent,int)
 
-	assert isinstance(percent,int)
+		sys.stdout.write('\r|{}>{}| {}%'.format(percent * '-', (100 - 1 - percent) * ' ', percent))
 
-	sys.stdout.write(
-		'\r|{}>{}| {}%'.format(
-			percent * '-',
-			(100 - 1 - percent) * ' ',
-			percent))
+		if percent == 100:
+			sys.stdout.write('\n')
+			sys.stdout.flush()
 
-	if percent == 100:
-		sys.stdout.write('\n')
-	sys.stdout.flush()

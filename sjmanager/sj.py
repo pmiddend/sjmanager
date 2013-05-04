@@ -82,7 +82,8 @@ class Sj:
 		downloader,
 		html_converter,
 		xquery_processor,
-		captcha):
+		captcha,
+		percent_callback_creator):
 
 		assert isinstance(sql,sjmanager.sql.base.Base)
 		assert isinstance(downloader,sjmanager.downloader.base.Base)
@@ -102,6 +103,7 @@ class Sj:
 #		self.downloader.download(url = 'http://{}'.format(self.site),percent_callback = lambda x : None)
 		self.downloader.touch(
 			url = 'http://{}'.format(self.site))
+		self.percent_callback_creator = percent_callback_creator
 
 	def shows_in_watch_cache(
 		self):
@@ -138,7 +140,7 @@ class Sj:
 		# This is more complex than you'd originally think. The problem
 		# is that we _might_ get a captcha, but maybe we get the page
 		# with the linklist directly! So first, download and parse the episode link...
-		with self.html_converter.convert(self.downloader.download(url = episode_link,percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha html file'))) as original_xmlfile:
+		with self.html_converter.convert(self.downloader.download(url = episode_link,percent_callback = self.percent_callback_creator('Downloading captcha html file'))) as original_xmlfile:
 
 			# ...now try to extract the captcha url and the form
 			# name. If this fails, captcha_url will be an empty string
@@ -155,7 +157,7 @@ class Sj:
 			if captcha_url != '':
 				# ...so download the captcha image and resolve its text.
 				captcha_code = ''
-				with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = sjmanager.downloader.meter.Dialog('Downloading captcha image')) as captcha_image_file:
+				with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = self.percent_callback_creator('Downloading captcha image')) as captcha_image_file:
 					captcha_code = self.captcha.resolve(
 						sjmanager.util.Path(
 							captcha_image_file.name))
@@ -174,7 +176,7 @@ class Sj:
 
 				link_list_string = ''
 
-				with self.downloader.download(url = episode_link,post_dict = post_dict,percent_callback = sjmanager.downloader.meter.Dialog('Downloading linklist')) as response_html_file:
+				with self.downloader.download(url = episode_link,post_dict = post_dict,percent_callback = self.percent_callback_creator('Downloading linklist')) as response_html_file:
 					#sjmanager.log.log('got the html file '+str(response_html_file.read(),encoding='utf8'))
 					response_html_file.seek(0)
 					response_xml_file = self.html_converter.convert(response_html_file)
@@ -247,14 +249,15 @@ class Sj:
 						self.html_converter,
 						self.xquery_processor,
 						row['name'],
-						row['url'])
+						row['url'],
+						self.percent_callback_creator)
 			result_shows.append(
 				self.show_url_to_show[row['url']])
 
 		sjmanager.log.log("Got {} shows".format(len(result_shows)))
 
 		return result_shows
-		
+
 	def __update_show_cache(
 		self):
 		"""
@@ -270,7 +273,7 @@ class Sj:
 		if count_result.fetchone()[0] != 0:
 			return
 
-		with self.html_converter.convert(self.downloader.download(url = 'http://{}/?cat=0&showall'.format(self.site), percent_callback = sjmanager.downloader.meter.Dialog('Downloading show list'))) as xmlfile:
+		with self.html_converter.convert(self.downloader.download(url = 'http://{}/?cat=0&showall'.format(self.site), percent_callback = self.percent_callback_creator('Downloading show list'))) as xmlfile:
 			xquery_output = self.xquery_processor.run(
 					'''let $endl := "&#10;" for $entry in doc("<<<INPUTFILE>>>")//*[@id="sidebar"]/ul/li/a
 								return ($entry/text(), $endl, data($entry/@href), $endl)''',
@@ -290,7 +293,6 @@ class Sj:
 					'INSERT INTO show (name,url) VALUES (?,?)',
 					show_array)
 			self.sql.commit()
-	
 
 class Show:
 	def __init__(
@@ -301,8 +303,9 @@ class Show:
 		html_converter,
 		xquery_processor,
 		name,
-		url):
-		""" 
+		url,
+		percent_callback_creator):
+		"""
 		This shouldn't do anything heavy, since find_shows returns a list of
 		constructed show objects and this list might be large.
 		"""
@@ -322,6 +325,8 @@ class Show:
 		# The season cache is a dictionary. It maps a mangled season title to a
 		# list of SeasonCacheEntry objects (see below)
 		self.season_title_to_links = None
+		self.percent_callback_creator = percent_callback_creator
+
 
 	def episode_in_cache(
 		self,
@@ -501,7 +506,7 @@ class Show:
 		# title to the url
 		html_file = self.downloader.download(
 			url = self.url,
-			percent_callback = sjmanager.downloader.meter.Dialog('Downloading season links for season'))
+			percent_callback = self.percent_callback_creator('Downloading season links for season'))
 
 		xquery_output = ''
 
@@ -528,9 +533,9 @@ class Show:
 				season_title)
 
 			if mangled_season_title not in self.season_title_to_links:
-				self.season_title_to_links[mangled_season_title] = [Show.SeasonCacheEntry(mangled_season_title,season_link)]
+				self.season_title_to_links[mangled_season_title] = [Show.SeasonCacheEntry(mangled_season_title,season_link,self.percent_callback_creator)]
 			else:
-				self.season_title_to_links[mangled_season_title].append(Show.SeasonCacheEntry(mangled_season_title,season_link))
+				self.season_title_to_links[mangled_season_title].append(Show.SeasonCacheEntry(mangled_season_title,season_link,self.percent_callback_creator))
 
 	class EpisodeReader:
 		def __init__(self, source):
@@ -584,7 +589,8 @@ class Show:
 		def __init__(
 			self,
 			title,
-			link):
+			link,
+			percent_callback_creator):
 
 			assert isinstance(link,str)
 			assert isinstance(title,str)
@@ -592,13 +598,14 @@ class Show:
 			self.title = title
 			self.link = link
 			self.seasons = None
+			self.percent_callback_creator = percent_callback_creator
 
 		def follow_link(
 			self,
 			html_converter,
 			downloader,
 			xquery_processor):
-			with html_converter.convert(downloader.download(url = self.link,percent_callback = sjmanager.downloader.meter.Dialog('Download episodes for season...'))) as xml_file:
+			with html_converter.convert(downloader.download(url = self.link,percent_callback = self.percent_callback_creator('Download episodes for season...'))) as xml_file:
 				xquery_output = xquery_processor.run_file(
 					sjmanager.util.Path('xqueries')/'season_to_episodes.xquery',
 					sjmanager.util.Path(xml_file.name))

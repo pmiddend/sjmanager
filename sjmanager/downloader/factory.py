@@ -9,4 +9,4 @@ def create(
 	return sjmanager.util.abstract_factory(
 		config_file,
 		'downloader',
-		[sjmanager.downloader.native.Native, sjmanager.downloader.curl.Curl])
+		[sjmanager.downloader.curl.Curl, sjmanager.downloader.native.Native])

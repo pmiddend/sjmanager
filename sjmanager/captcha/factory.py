@@ -10,6 +10,6 @@ def create(
 		config_file,
 		'captcha_resolver',
 		[
-			sjmanager.captcha.caca_viewer.CacaViewer,
 			sjmanager.captcha.image_viewer.ImageViewer,
+			sjmanager.captcha.caca_viewer.CacaViewer
 		])

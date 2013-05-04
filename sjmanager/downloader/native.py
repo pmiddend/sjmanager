@@ -50,7 +50,7 @@ class Native(sjmanager.downloader.base.Base):
 	def __init__(
 		self,
 		config_file):
-		pass
+		print('Initing native')
 
 	# Note: static!
 	def available(config_file):
