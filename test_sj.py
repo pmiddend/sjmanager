@@ -68,8 +68,5 @@ first_season = breaking_bad.seasons('1')
 for post in first_season:
 	print('Episode titles for this post (duration {}) are: {}'.format(post.duration,post.episode_titles()))
 
-exit(0)
-
-print(sj.resolve_linklist(
-	first_season[0].episode('1').link,
-	sj.resolve_captcha_image))
+print('Retrieving download links for '+first_season[0].episode('1').title+': '+first_season[0].episode('1').link)
+print(sj.resolve_linklist(first_season[0].episode('1').link))

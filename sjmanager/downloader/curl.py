@@ -14,7 +14,6 @@ class _Process:
 		self,
 		args,
 		stdout_file):
-		print('Initing curl')
 
 		assert isinstance(args,list)
 

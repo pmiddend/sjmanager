@@ -20,6 +20,7 @@ class Dialog:
 class Simple:
 	def __init__(self,title):
 		assert isinstance(title,str)
+		print(title+": ");
 
 	def __call__(self,percent):
 		sjmanager.log.log('Got {} percent (type {})'.format(percent,type(percent)))

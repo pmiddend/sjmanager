@@ -12,7 +12,7 @@ let $info := (
 let $entries := $season//strong/text()[contains(., "Dauer") or contains(., "Download")]/../..
 return
 	for $entry in $entries
-		let $linktext := $entry/text()[contains(., "rapidshare.com")]
+		let $linktext := $entry/text()[contains(., "uploaded.to")]
 		let $probable_title := normalize-space(string-join($entry/strong[1]/text(), ""))
 		return
 		(

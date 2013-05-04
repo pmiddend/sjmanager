@@ -709,6 +709,5 @@ class Episode:
 
 		self.real_title = real_title
 		self.title = title
-		self.title = title
 		self.link = link
 
