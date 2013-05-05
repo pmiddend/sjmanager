@@ -27,7 +27,10 @@ class Account:
 
 		assert isinstance(link,str)
 
+		sjmanager.log.log('Making '+link+" a proper link")
+
 		if re.search(self.valid_link_regex,link):
+			sjmanager.log.log(link+" is already a proper link")
 			return link
 
 		locations = self.downloader.track_link(
@@ -35,6 +38,7 @@ class Account:
 
 		for location in locations:
 			if re.search(self.valid_link_regex,location):
+				sjmanager.log.log('Decision: '+location+' is a proper link')
 				return location
 
 		raise Exception("Couldn't make '{}' to a proper RS link. The locations were {}".format(link,locations))
@@ -48,7 +52,7 @@ class Account:
 		locations = self.downloader.track_link(
 			link)
 
-		return re.search('/404$',locations[-1])
+		return CheckLink.ok if re.search('/404$',locations[-1]) == None else CheckLink.file_not_found,'404'
 
 	def download(
 		self,

@@ -42,7 +42,8 @@ sj = sjmanager.sj.Sj(
 	downloader,
 	html_converter,
 	xquery_processor,
-	captcha)
+	captcha,
+	lambda x : sjmanager.downloader.meter.Dialog(x))
 
 m = sjmanager.menu.Menu(
 	ul,

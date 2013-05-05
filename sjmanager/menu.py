@@ -514,8 +514,12 @@ class Menu:
 		"""
 		assert isinstance(result['episode_link'],str)
 
+		sjmanager.log.log('Resolving linklist');
+
 		result['linklist'] = self.sj.resolve_linklist(
 			result['episode_link'])
+
+		sjmanager.log.log('Done, we got {} links'.format(len(result['linklist'])));
 
 		if result['linklist'] == None:
 			return sjmanager.states.return_code_back(1)
@@ -524,6 +528,8 @@ class Menu:
 		if result['linklist'] == None or len(result['linklist']) == 0:
 			return sjmanager.states.return_code_forward()
 
+		sjmanager.log.log('Making the links proper (if necessary)');
+
 		linklist = []
 		for raw_link in result['linklist']:
 			linklist.append(
@@ -531,6 +537,8 @@ class Menu:
 					raw_link))
 
 		result['linklist'] = linklist
+
+		sjmanager.log.log('Done, {} links, moving on...'.format(len(result['linklist'])));
 
 		return sjmanager.states.return_code_forward()
 
@@ -619,6 +627,8 @@ class Menu:
 	def download(self,result):
 		result['download_error'] = ''
 
+		sjmanager.log.log('Downloading, checking links first...');
+
 		try:
 			link_pm = sjmanager.dialog.ProgressMeter(
 				'Checking links...')
@@ -627,8 +637,13 @@ class Menu:
 				0)
 
 			counter = 1
+
+			sjmanager.log.log('Iterating over {} links'.format(len(result['linklist'])))
+
 			# Ok, we've got the links. Check if they're valid (one by one)
 			for link in result['linklist']:
+				sjmanager.log.log('Link is '+link)
+
 				result_code,result_string = self.ul.check_link(
 					link)
 

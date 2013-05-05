@@ -229,8 +229,12 @@ class Curl(sjmanager.downloader.base.Base):
 				re.MULTILINE)
 
 		new_locations = []
-		for location in locations:
-			new_locations.append(
-					location.strip())
+
+		if len(locations) == 0:
+			new_locations = [link]
+		else:
+			for location in locations:
+				new_locations.append(
+						location.strip())
 
 		return new_locations
