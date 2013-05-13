@@ -28,7 +28,7 @@ class TestDownloader(unittest.TestCase):
 		def test_simple(self):
 				result = self.downloader.download(
 						url = test_url,
-						percent_callback = sjmanager.downloader.meter.None("Downloading..."))
+						percent_callback = sjmanager.downloader.meter.Null("Downloading..."))
 
 				self.assertTrue(result)
 
@@ -52,7 +52,7 @@ class TestDownloader(unittest.TestCase):
 				result = self.downloader.download(
 						url = test_url,
 						output_file_path = output_file,
-						percent_callback = sjmanager.downloader.meter.None("Downloading..."))
+						percent_callback = sjmanager.downloader.meter.Null("Downloading..."))
 
 				self.assertTrue(result)
 
@@ -63,20 +63,20 @@ class TestDownloader(unittest.TestCase):
 		def test_failure(self):
 				result = self.downloader.download(
 						url = 'http://test.com/lol',
-						percent_callback = sjmanager.downloader.meter.None("Downloading..."))
+						percent_callback = sjmanager.downloader.meter.Null("Downloading..."))
 
 				self.assertTrue(result)
 
 				result = self.downloader.download(
 						url = 'http://llllllllllllllllllllllll.com/lol',
-						percent_callback = sjmanager.downloader.meter.None("Downloading..."))
+						percent_callback = sjmanager.downloader.meter.Null("Downloading..."))
 
 				self.assertTrue(result)
 
 		def test_https(self):
 				result = self.downloader.download(
 						url = test_url_https,
-						percent_callback = sjmanager.downloader.meter.None("Downloading..."))
+						percent_callback = sjmanager.downloader.meter.Null("Downloading..."))
 
 				self.assertTrue(result)
 

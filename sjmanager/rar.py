@@ -1,6 +1,7 @@
 import subprocess
 import re
 import sjmanager.util
+import sjmanager.fsutil
 import sjmanager.dialog
 
 rar_executable = None
@@ -16,7 +17,7 @@ class RarProcess:
 	def __init__(self,args,working_dir):
 		sjmanager.log.log('Extracting something. Arguments are {}, working dir is {}'.format(args,working_dir))
 
-		assert isinstance(working_dir,sjmanager.util.Path)
+		assert isinstance(working_dir,sjmanager.fsutil.Path)
 
 		self.process = subprocess.Popen(
 			args,
@@ -75,9 +76,9 @@ def unrar(
 	working_dir,
 	password = None):
 
-	assert isinstance(filename,sjmanager.util.Path)
+	assert isinstance(filename,sjmanager.fsutil.Path)
 	assert isinstance(title,str)
-	assert isinstance(working_dir,sjmanager.util.Path)
+	assert isinstance(working_dir,sjmanager.fsutil.Path)
 
 	args = [rar_executable,'x',str(filename),'-o+']
 

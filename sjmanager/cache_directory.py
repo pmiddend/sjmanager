@@ -1,14 +1,14 @@
 import os
-import sjmanager.util
+import sjmanager.fsutil
 
 _cache_directory = None
 
 if 'XDG_CACHE_HOME' in os.environ:
-	_cache_directory = sjmanager.util.Path(
+	_cache_directory = sjmanager.fsutil.Path(
 		os.environ['XDG_CACHE_HOME'])
 else:
 	assert 'HOME' in os.environ, 'Not even $HOME is defined, what the fuck is wrong here?!'
-	_cache_directory = sjmanager.util.Path(os.environ['HOME']) / ".cache"
+	_cache_directory = sjmanager.fsfsutil.Path(os.environ['HOME']) / ".cache"
 
 assert _cache_directory != None
 

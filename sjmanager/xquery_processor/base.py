@@ -1,5 +1,6 @@
 import abc
 import sjmanager.util
+import sjmanager.fsutil
 
 class Base(object):
 	__metaclass__ = abc.ABCMeta
@@ -27,8 +28,8 @@ class Base(object):
 			xquery_file,
 			xml_file,
 			clean = True):
-		assert isinstance(xquery_file,sjmanager.util.Path)
-		assert isinstance(xml_file,sjmanager.util.Path)
+		assert isinstance(xquery_file,sjmanager.fsutil.Path)
+		assert isinstance(xml_file,sjmanager.fsutil.Path)
 
 		with open(str(xquery_file), encoding='utf-8') as xquery_source_file:
 			return self.run(

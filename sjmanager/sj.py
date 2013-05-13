@@ -6,6 +6,7 @@ import sjmanager.captcha.base
 import sjmanager.dialog
 import sjmanager.html_to_xml.base
 import sjmanager.log
+import sjmanager.fsutil
 import subprocess
 import hashlib
 import sys
@@ -146,11 +147,11 @@ class Sj:
 			# name. If this fails, captcha_url will be an empty string
 			captcha_url = self.xquery_processor.run(
 				'data(doc("<<<INPUTFILE>>>")//*[@id="postit"]//img[1]/@src)',
-				sjmanager.util.Path(
+				sjmanager.fsutil.Path(
 					original_xmlfile.name))[0]
 			form_name = self.xquery_processor.run(
 				'data(doc("<<<INPUTFILE>>>")//input[@name="s"]/@value)',
-				sjmanager.util.Path(
+				sjmanager.fsutil.Path(
 					original_xmlfile.name))[0]
 
 			# If it's not an empty string, we have a captcha url...
@@ -159,7 +160,7 @@ class Sj:
 				captcha_code = ''
 				with self.downloader.download(url = 'http://download.{}{}'.format(self.site, captcha_url), percent_callback = self.percent_callback_creator('Downloading captcha image')) as captcha_image_file:
 					captcha_code = self.captcha.resolve(
-						sjmanager.util.Path(
+						sjmanager.fsutil.Path(
 							captcha_image_file.name))
 
 					# This is a special case: We have to differentiate between "wrong
@@ -183,7 +184,7 @@ class Sj:
 					# Finally, extract the links
 					link_list_string = self.xquery_processor.run(
 						link_list_xquery,
-						sjmanager.util.Path(
+						sjmanager.fsutil.Path(
 							response_xml_file.name))
 
 				result = link_list_string
@@ -196,7 +197,7 @@ class Sj:
 				# If we didn't get a captcha url, try to extract the links directly
 				link_list_string = self.xquery_processor.run(
 					link_list_xquery,
-					sjmanager.util.Path(
+					sjmanager.fsutil.Path(
 						original_xmlfile.name))
 
 				result = link_list_string
@@ -277,7 +278,7 @@ class Sj:
 			xquery_output = self.xquery_processor.run(
 					'''let $endl := "&#10;" for $entry in doc("<<<INPUTFILE>>>")//*[@id="sidebar"]/ul/li/a
 								return ($entry/text(), $endl, data($entry/@href), $endl)''',
-					sjmanager.util.Path(
+					sjmanager.fsutil.Path(
 						xmlfile.name))
 			l = xquery_output
 			assert len(l) % 2 == 0
@@ -514,7 +515,7 @@ class Show:
 			xquery_output = self.xquery_processor.run(
 					'''let $endl := "&#10;" for $staffel in doc("<<<INPUTFILE>>>")//div[@id="scb"]//a[contains(@href,"{}")]
 					return ( $staffel/text(), $endl, data($staffel/@href), $endl )'''.format(self.site),
-					sjmanager.util.Path(xmlfile.name))
+					sjmanager.fsutil.Path(xmlfile.name))
 
 		l = xquery_output
 		assert len(l) % 2 == 0
@@ -607,8 +608,8 @@ class Show:
 			xquery_processor):
 			with html_converter.convert(downloader.download(url = self.link,percent_callback = self.percent_callback_creator('Download episodes for season...'))) as xml_file:
 				xquery_output = xquery_processor.run_file(
-					sjmanager.util.Path('xqueries')/'season_to_episodes.xquery',
-					sjmanager.util.Path(xml_file.name))
+					sjmanager.fsutil.Path('xqueries')/'season_to_episodes.xquery',
+					sjmanager.fsutil.Path(xml_file.name))
 
 			self.seasons = []
 			for season_dict,episodes in Show.EpisodeReader(xquery_output).read():

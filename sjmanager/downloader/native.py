@@ -1,6 +1,7 @@
 import sjmanager.log
 import sjmanager.downloader.base
 import sjmanager.util
+import sjmanager.fsutil
 import urllib.parse
 import http.cookiejar
 import urllib.request
@@ -70,7 +71,7 @@ class Native(sjmanager.downloader.base.Base):
 		cookie = None):
 
 		assert isinstance(url,str)
-		assert output_file_path == None or isinstance(output_file_path,sjmanager.util.Path)
+		assert output_file_path == None or isinstance(output_file_path,sjmanager.fsutil.Path)
 		assert post_dict == None or isinstance(post_dict,dict)
 
 		sjmanager.log.log('Downloading {}'.format(url))

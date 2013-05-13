@@ -1,4 +1,5 @@
 import sjmanager.xquery_processor.base
+import sjmanager.fsutil
 import sjmanager.util
 import sjmanager.log
 import tempfile
@@ -28,7 +29,7 @@ class Xqilla(sjmanager.xquery_processor.base.Base):
 		command,
 		xml_file,
 		clean = True):
-		assert isinstance(xml_file,sjmanager.util.Path)
+		assert isinstance(xml_file,sjmanager.fsutil.Path)
 
 		with tempfile.NamedTemporaryFile(mode = 'w+') as xquery_command_file:
 			xquery_tool = [self.executable,xquery_command_file.name]

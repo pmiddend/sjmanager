@@ -1,14 +1,14 @@
 import os
-import sjmanager.util
+import sjmanager.fsutil
 
 _config_directory = None
 
 if 'XDG_CONFIG_HOME' in os.environ:
-	_config_directory = sjmanager.util.Path(
+	_config_directory = sjmanager.fsutil.Path(
 		os.environ['XDG_CONFIG_HOME'])
 else:
 	assert 'HOME' in os.environ, 'Not even $HOME is defined, what the fuck is wrong here?!'
-	_config_directory = sjmanager.util.Path(os.environ['HOME']) / ".config"
+	_config_directory = sjmanager.fsutil.Path(os.environ['HOME']) / ".config"
 
 assert _config_directory != None
 

@@ -33,3 +33,11 @@ class Simple:
 			sys.stdout.write('\n')
 			sys.stdout.flush()
 
+class Null:
+	def __init__(self,title):
+		assert isinstance(title,str)
+		pass
+
+	def __call__(self,percent):
+		pass
+
