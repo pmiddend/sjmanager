@@ -699,7 +699,7 @@ class Menu:
 					filename = first_file_name,
 					working_dir = tempdir,
 					password = password,
-					title = 'Extracting...')
+					percent_callback = sjmanager.downloader.meter.Dialog('Extracting...'))
 
 				if error_string == None:
 					password_worked = True

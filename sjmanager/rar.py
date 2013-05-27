@@ -72,34 +72,25 @@ class RarProcess:
 
 def unrar(
 	filename,
-	title,
 	working_dir,
-	password = None):
+	percent_callback,
+	password):
 
 	assert isinstance(filename,sjmanager.fsutil.Path)
-	assert isinstance(title,str)
 	assert isinstance(working_dir,sjmanager.fsutil.Path)
+	assert isinstance(password,str)
+	assert len(password) > 0
 
 	args = [rar_executable,'x',str(filename),'-o+']
 
-	if password != None:
-		assert isinstance(password,str)
-		args += ['-p{}'.format(password)]
+	args += ['-p{}'.format(password)]
 
 	rar_process = RarProcess(
 		args,
 		working_dir)
 
-	try:
-		progress_meter = sjmanager.dialog.ProgressMeter(
-			title)
-
-		while not rar_process.finished():
-#			print(rar_process.percent())
-			progress_meter.update(
-				rar_process.percent())
-	finally:
-		progress_meter.close()
+	while not rar_process.finished():
+		percent_callback(rar_process.percent())
 
 	if rar_process.returncode() != 0:
 		return rar_process.stderr_output()

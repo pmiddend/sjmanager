@@ -2,6 +2,9 @@
 
 export PYTHONPATH="$(pwd)"
 for i in tests/*.py; do
+    if [[ $i == 'tests/test_dialog.py' ]]; then
+	continue
+    fi
     echo "$i"
     python3 "$i";
 done
